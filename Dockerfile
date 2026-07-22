@@ -6,12 +6,12 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copiar package files
-COPY package.json package-lock.json* ./
+COPY package.json ./
 
 # Instalar TODAS las dependencias (incluyendo devDependencies)
 # Necesitamos devDependencies para el build
 ENV NODE_ENV=development
-RUN npm ci
+RUN npm install
 
 # Builder
 FROM base AS builder
