@@ -254,7 +254,7 @@ export default function AdminCasesPage() {
                   </div>
                   {formData.mediaLinks.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2">
-                      {formData.mediaLinks.map((link, i) => (
+                      {formData.mediaLinks.map((link: string, i: number) => (
                         <div key={i} className="flex items-center gap-1 bg-gray-100 rounded px-2 py-1 text-sm">
                           <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 truncate max-w-[200px]">
                             Link {i + 1}

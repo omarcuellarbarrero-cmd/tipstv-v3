@@ -221,7 +221,7 @@ export default function DashboardPage() {
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-2">Enlaces de referencia:</h4>
                     <div className="flex flex-wrap gap-2">
-                      {result.mediaLinks.map((link, i) => (
+                      {result.mediaLinks.map((link: string, i: number) => (
                         <a
                           key={i}
                           href={link}
