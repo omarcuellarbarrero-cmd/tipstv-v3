@@ -27,7 +27,8 @@
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-slot": "^1.1.0",
-    "csv-parser": "^3.0.0"
+    "csv-parser": "^3.0.0",
+    "csv-parse": "^5.5.6"
   },
   "devDependencies": {
     "typescript": "^5.5.4",
