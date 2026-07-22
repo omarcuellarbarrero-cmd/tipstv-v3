@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 
+// GET - Listar casos
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session || session.user.role !== "ADMIN") {
@@ -37,6 +38,7 @@ export async function GET(request: Request) {
   return NextResponse.json({ cases, total, page, limit })
 }
 
+// POST - Crear caso
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session || session.user.role !== "ADMIN") {

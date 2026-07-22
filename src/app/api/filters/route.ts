@@ -20,7 +20,7 @@ export async function GET(request: Request) {
       distinct: ["type"],
       orderBy: { type: "asc" },
     })
-    return NextResponse.json({ filters: types.map((t) => t.type) })
+    return NextResponse.json({ filters: types.map((t: { type: string }) => t.type) })
   }
 
   if (type && !brand) {
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
       distinct: ["brand"],
       orderBy: { brand: "asc" },
     })
-    return NextResponse.json({ filters: brands.map((b) => b.brand) })
+    return NextResponse.json({ filters: brands.map((b: { brand: string }) => b.brand) })
   }
 
   if (type && brand && !modelChassis) {
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
       distinct: ["modelChassis"],
       orderBy: { modelChassis: "asc" },
     })
-    return NextResponse.json({ filters: models.map((m) => m.modelChassis) })
+    return NextResponse.json({ filters: models.map((m: { modelChassis: string }) => m.modelChassis) })
   }
 
   if (type && brand && modelChassis) {
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
       distinct: ["symptom"],
       orderBy: { symptom: "asc" },
     })
-    return NextResponse.json({ filters: symptoms.map((s) => s.symptom) })
+    return NextResponse.json({ filters: symptoms.map((s: { symptom: string }) => s.symptom) })
   }
 
   return NextResponse.json({ filters: [] })
