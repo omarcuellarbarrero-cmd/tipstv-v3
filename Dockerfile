@@ -1,62 +1,34 @@
-FROM node:20-alpine AS base
+FROM node:20-alpine
 
-# Install dependencies only when needed
-FROM base AS deps
+# Instalar dependencias del sistema
 RUN apk add --no-cache libc6-compat openssl
+
 WORKDIR /app
 
-# Install dependencies
+# Copiar package.json e instalar dependencias
 COPY package.json ./
 RUN npm install
 
-# Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Copiar todo el código
 COPY . .
 
-ENV NEXT_TELEMETRY_DISABLED 1
-
-# Generate Prisma Client BEFORE building
+# Generar Prisma Client
 RUN npx prisma generate
 
-# Build the app
+# Build de la aplicación
 RUN npm run build
 
-# Production image, copy all the files and run next
-FROM base AS runner
-WORKDIR /app
-
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
-
+# Crear usuario no-root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
-
-# Create public directory if it doesn't exist in build output
-RUN mkdir -p /app/public
-
-# Copy from builder - use wildcard to handle missing public gracefully
-COPY --from=builder --chown=nextjs:nodejs /app/public* ./public 2>/dev/null || true
-
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-# Automatically leverage output traces to reduce image size
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-# Copy Prisma files needed for runtime
-COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
-
+RUN chown -R nextjs:nodejs /app
 USER nextjs
 
+# Puerto
 EXPOSE 3000
 
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+ENV NODE_ENV=production
 
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
