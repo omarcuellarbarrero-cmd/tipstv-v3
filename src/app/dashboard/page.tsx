@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { LogOut, Search, ArrowLeft, ExternalLink, List, ChevronDown, ChevronUp } from "lucide-react"
+import { LogOut, Search, ArrowLeft, ExternalLink, List } from "lucide-react"
 import { signOut } from "next-auth/react"
 
 interface CaseResult {
@@ -29,18 +29,18 @@ interface CaseResult {
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-
+  
   const [step, setStep] = useState(1)
   const [type, setType] = useState("")
   const [brand, setBrand] = useState("")
   const [model, setModel] = useState("")
   const [symptom, setSymptom] = useState("")
-
+  
   const [types, setTypes] = useState<string[]>([])
   const [brands, setBrands] = useState<string[]>([])
   const [models, setModels] = useState<string[]>([])
   const [symptoms, setSymptoms] = useState<string[]>([])
-
+  
   const [result, setResult] = useState<CaseResult | null>(null)
   const [partialResults, setPartialResults] = useState<CaseResult[]>([])
   const [showPartial, setShowPartial] = useState(false)
@@ -53,14 +53,12 @@ export default function DashboardPage() {
     }
   }, [status, router])
 
-  // Cargar tipos al inicio
   useEffect(() => {
     fetch("/api/filters")
       .then((r) => r.json())
       .then((data) => setTypes(data.filters))
   }, [])
 
-  // Cargar marcas cuando cambia tipo
   useEffect(() => {
     if (!type) return
     setBrand("")
@@ -71,13 +69,12 @@ export default function DashboardPage() {
     setSymptoms([])
     setPartialResults([])
     setShowPartial(false)
-
+    
     fetch(`/api/filters?type=${encodeURIComponent(type)}`)
       .then((r) => r.json())
       .then((data) => setBrands(data.filters))
   }, [type])
 
-  // Cargar modelos cuando cambia marca
   useEffect(() => {
     if (!type || !brand) return
     setModel("")
@@ -86,18 +83,17 @@ export default function DashboardPage() {
     setSymptoms([])
     setPartialResults([])
     setShowPartial(false)
-
+    
     fetch(`/api/filters?type=${encodeURIComponent(type)}&brand=${encodeURIComponent(brand)}`)
       .then((r) => r.json())
       .then((data) => setModels(data.filters))
   }, [brand, type])
 
-  // Cargar síntomas cuando cambia modelo
   useEffect(() => {
     if (!type || !brand || !model) return
     setSymptom("")
     setSymptoms([])
-
+    
     fetch(`/api/filters?type=${encodeURIComponent(type)}&brand=${encodeURIComponent(brand)}&modelChassis=${encodeURIComponent(model)}`)
       .then((r) => r.json())
       .then((data) => setSymptoms(data.filters))
@@ -109,13 +105,13 @@ export default function DashboardPage() {
     setNotFound(false)
     setPartialResults([])
     setShowPartial(false)
-
+    
     const res = await fetch(
       `/api/search?type=${encodeURIComponent(type)}&brand=${encodeURIComponent(brand)}&modelChassis=${encodeURIComponent(model)}&symptom=${encodeURIComponent(symptom)}`
     )
-
+    
     const data = await res.json()
-
+    
     if (data.found) {
       setResult(data.case)
     } else {
@@ -128,14 +124,14 @@ export default function DashboardPage() {
     setLoading(true)
     setResult(null)
     setNotFound(false)
-
+    
     const url = model
       ? `/api/search-partial?type=${encodeURIComponent(type)}&brand=${encodeURIComponent(brand)}&modelChassis=${encodeURIComponent(model)}`
       : `/api/search-partial?type=${encodeURIComponent(type)}&brand=${encodeURIComponent(brand)}`
-
+    
     const res = await fetch(url)
     const data = await res.json()
-
+    
     if (data.cases && data.cases.length > 0) {
       setPartialResults(data.cases)
       setShowPartial(true)
@@ -176,7 +172,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white border-b shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -215,14 +210,13 @@ export default function DashboardPage() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-6">
-        {/* Resultado exacto */}
         {result && (
           <div className="mb-6">
             <Button variant="ghost" onClick={resetSearch} className="mb-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Nueva búsqueda
             </Button>
-
+            
             <Card className="border-green-200 bg-green-50">
               <CardHeader>
                 <CardTitle className="text-green-800 flex items-center gap-2">
@@ -237,26 +231,26 @@ export default function DashboardPage() {
                   <div className="col-span-2"><span className="font-semibold">Modelo/Chasis:</span> {result.modelChassis}</div>
                   <div className="col-span-2"><span className="font-semibold">Síntoma:</span> {result.symptom}</div>
                 </div>
-
+                
                 {result.descarte && (
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                     <h4 className="font-semibold text-yellow-800 mb-1">Descarte / Causa:</h4>
                     <p className="text-yellow-900 whitespace-pre-wrap">{result.descarte}</p>
                   </div>
                 )}
-
+                
                 <div className="bg-white border rounded-lg p-4">
                   <h4 className="font-semibold text-gray-800 mb-2">Solución:</h4>
                   <div className="text-gray-700 whitespace-pre-wrap leading-relaxed">
                     {result.solution}
                   </div>
                 </div>
-
+                
                 {result.mediaLinks && result.mediaLinks.length > 0 && (
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-2">Enlaces de referencia:</h4>
                     <div className="flex flex-wrap gap-2">
-                      {result.mediaLinks.map((link: string, i: number) => (
+                      {result.mediaLinks.map((link, i) => (
                         <a
                           key={i}
                           href={link}
@@ -276,14 +270,13 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Resultados parciales (lista de tips) */}
         {showPartial && partialResults.length > 0 && (
           <div className="mb-6">
             <Button variant="ghost" onClick={() => setShowPartial(false)} className="mb-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Volver a búsqueda
             </Button>
-
+            
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -321,7 +314,6 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* No encontrado */}
         {notFound && (
           <div className="mb-6">
             <Button variant="ghost" onClick={() => setNotFound(false)} className="mb-4">
@@ -342,14 +334,12 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Buscador paso a paso */}
         {!result && !showPartial && !notFound && (
           <Card>
             <CardHeader>
               <CardTitle className="text-xl">Buscar diagnóstico</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Indicador de pasos */}
               <div className="flex items-center gap-2 mb-4">
                 {[1, 2, 3, 4].map((s) => (
                   <div
@@ -364,7 +354,6 @@ export default function DashboardPage() {
                 Paso {step} de 4
               </p>
 
-              {/* Paso 1: Tipo */}
               {step === 1 && (
                 <div className="space-y-4">
                   <label className="text-lg font-medium block">1. Selecciona el tipo de TV</label>
@@ -383,7 +372,6 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Paso 2: Marca */}
               {step === 2 && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
@@ -405,8 +393,7 @@ export default function DashboardPage() {
                       ))}
                     </SelectContent>
                   </Select>
-
-                  {/* Botón para ver todos los tips de esta marca */}
+                  
                   {brand && (
                     <Button
                       variant="outline"
@@ -420,7 +407,6 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Paso 3: Modelo */}
               {step === 3 && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
@@ -442,8 +428,7 @@ export default function DashboardPage() {
                       ))}
                     </SelectContent>
                   </Select>
-
-                  {/* Botón para ver todos los tips de este modelo */}
+                  
                   {model && (
                     <Button
                       variant="outline"
@@ -457,7 +442,6 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Paso 4: Síntoma */}
               {step === 4 && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
@@ -479,7 +463,7 @@ export default function DashboardPage() {
                       ))}
                     </SelectContent>
                   </Select>
-
+                  
                   <Button
                     onClick={handleSearch}
                     disabled={!symptom || loading}

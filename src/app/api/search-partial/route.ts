@@ -21,7 +21,6 @@ export async function GET(request: Request) {
     )
   }
 
-  // Construir el where dinámicamente
   const where: any = { type, brand }
   if (modelChassis) {
     where.modelChassis = { equals: modelChassis, mode: "insensitive" }
