@@ -110,7 +110,10 @@ export default function AdminUsersPage() {
             <Button variant="ghost" size="sm" onClick={() => router.push("/admin")}>
               <ArrowLeft className="w-4 h-4" />
             </Button>
-            <h1 className="font-bold text-lg">Usuarios</h1>
+            <div className="flex items-center gap-2">
+              <img src="https://omarcuellar.co/wp-content/uploads/logo-metodooc.png" alt="Método OC" className="w-8 h-8 object-contain" />
+              <h1 className="font-bold text-lg">Usuarios</h1>
+            </div>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>

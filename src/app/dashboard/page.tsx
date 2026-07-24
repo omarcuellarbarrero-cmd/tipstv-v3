@@ -149,8 +149,12 @@ export default function DashboardPage() {
       <header className="bg-white border-b shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Wrench className="w-5 h-5 text-white" />
+            <div className="w-10 h-10">
+              <img 
+                src="https://omarcuellar.co/wp-content/uploads/logo-metodooc.png" 
+                alt="Método OC" 
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
               <h1 className="font-bold text-lg leading-tight">TipsTV v3</h1>

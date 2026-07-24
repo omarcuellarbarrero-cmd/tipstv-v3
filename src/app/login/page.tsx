@@ -40,8 +40,12 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white text-2xl font-bold">TV</span>
+          <div className="mx-auto mb-4 w-32 h-32">
+            <img 
+              src="https://omarcuellar.co/wp-content/uploads/logo-metodooc.png" 
+              alt="Método OC - TipsTV v3" 
+              className="w-full h-full object-contain"
+            />
           </div>
           <CardTitle className="text-2xl">TipsTV v3</CardTitle>
           <CardDescription>Diagnóstico rápido para técnicos</CardDescription>
