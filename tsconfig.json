@@ -32,7 +32,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "src/app/dashboard/page.tsx-back"  ],
+, "src/app/dashboard/page.tsx-back", "src/app/dashboard/page.tsx-back2"  ],
   "exclude": [
     "node_modules",
     ".next",

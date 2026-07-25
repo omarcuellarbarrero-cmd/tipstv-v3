@@ -46,9 +46,6 @@ export default function DashboardPage() {
   const [notFound, setNotFound] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const [allModels, setAllModels] = useState<string[]>([])
-  const [showAllModels, setShowAllModels] = useState(false)
-
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login")
@@ -392,52 +389,15 @@ export default function DashboardPage() {
                     <label className="text-lg font-medium">3. Escribe el modelo/chasis</label>
                   </div>
                   <div className="text-sm text-gray-500 mb-2">{type} → {brand}</div>
-
-                  <div className="flex gap-2">
-                    <Autocomplete
-                      value={model}
-                      onChange={setModel}
-                      onSelect={() => setStep(4)}
-                      field="modelChassis"
-                      type={type}
-                      brand={brand}
-                      placeholder="Escribe el modelo/chasis..."
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-14 px-3"
-                      title="Ver todos los modelos"
-                      onClick={async () => {
-                        const res = await fetch(
-                          `/api/filters?type=${encodeURIComponent(type)}&brand=${encodeURIComponent(brand)}`
-                        )
-                        const data = await res.json()
-                        setAllModels(data.filters || [])
-                        setShowAllModels(true)
-                      }}
-                    >
-                      <List className="w-4 h-4" />
-                    </Button>
-                  </div>
-
-                  {showAllModels && allModels.length > 0 && (
-                    <div className="border border-gray-200 rounded-lg max-h-60 overflow-y-auto">
-                      {allModels.map((m) => (
-                        <div
-                          key={m}
-                          className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b last:border-0 transition"
-                          onClick={() => {
-                            setModel(m)
-                            setShowAllModels(false)
-                            setStep(4)
-                          }}
-                        >
-                          <span className="text-lg">{m}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <Autocomplete
+                    value={model}
+                    onChange={setModel}
+                    onSelect={() => setStep(4)}
+                    field="modelChassis"
+                    type={type}
+                    brand={brand}
+                    placeholder="Escribe el modelo/chasis..."
+                  />
 
                   {model && (
                     <Button
