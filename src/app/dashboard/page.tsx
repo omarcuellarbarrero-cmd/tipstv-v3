@@ -30,18 +30,18 @@ interface CaseResult {
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  
+
   const [step, setStep] = useState(1)
   const [type, setType] = useState("")
   const [brand, setBrand] = useState("")
   const [model, setModel] = useState("")
   const [symptom, setSymptom] = useState("")
-  
-  const [types, setTypes] = useState([])
-  const [brands, setBrands] = useState([])
-  
-  const [result, setResult] = useState(null)
-  const [partialResults, setPartialResults] = useState([])
+
+  const [types, setTypes] = useState<string[]>([])
+  const [brands, setBrands] = useState<string[]>([])
+
+  const [result, setResult] = useState<CaseResult | null>(null)
+  const [partialResults, setPartialResults] = useState<CaseResult[]>([])
   const [showPartial, setShowPartial] = useState(false)
   const [notFound, setNotFound] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -52,14 +52,12 @@ export default function DashboardPage() {
     }
   }, [status, router])
 
-  // Cargar tipos de TV
   useEffect(() => {
     fetch("/api/filters")
       .then((r) => r.json())
       .then((data) => setTypes(data.filters))
   }, [])
 
-  // Cargar marcas cuando cambia el tipo
   useEffect(() => {
     if (!type) return
     setBrand("")
@@ -68,15 +66,11 @@ export default function DashboardPage() {
     setBrands([])
     setPartialResults([])
     setShowPartial(false)
-    
+
     fetch(`/api/filters?type=${encodeURIComponent(type)}`)
       .then((r) => r.json())
       .then((data) => setBrands(data.filters))
   }, [type])
-
-  // ✅ ELIMINADO: useEffect que cargaba todos los modelos
-  // ✅ ELIMINADO: useEffect que cargaba todos los síntomas
-  // Ahora el Autocomplete busca en tiempo real desde /api/autocomplete
 
   async function handleSearch() {
     setLoading(true)
@@ -84,13 +78,13 @@ export default function DashboardPage() {
     setNotFound(false)
     setPartialResults([])
     setShowPartial(false)
-    
+
     const res = await fetch(
       `/api/search?type=${encodeURIComponent(type)}&brand=${encodeURIComponent(brand)}&modelChassis=${encodeURIComponent(model)}&symptom=${encodeURIComponent(symptom)}`
     )
-    
+
     const data = await res.json()
-    
+
     if (data.found) {
       setResult(data.case)
     } else {
@@ -103,14 +97,14 @@ export default function DashboardPage() {
     setLoading(true)
     setResult(null)
     setNotFound(false)
-    
+
     const url = model
       ? `/api/search-partial?type=${encodeURIComponent(type)}&brand=${encodeURIComponent(brand)}&modelChassis=${encodeURIComponent(model)}`
       : `/api/search-partial?type=${encodeURIComponent(type)}&brand=${encodeURIComponent(brand)}`
-    
+
     const res = await fetch(url)
     const data = await res.json()
-    
+
     if (data.cases && data.cases.length > 0) {
       setPartialResults(data.cases)
       setShowPartial(true)
@@ -143,356 +137,314 @@ export default function DashboardPage() {
 
   if (status === "loading") {
     return (
-      
-
-        
-Cargando...
-
-      
-
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Cargando...</div>
+      </div>
     )
   }
 
   return (
-    
-
-      
-
-        
-
-          
-
-            
-
-              Método OC
-            
-
-            
-
-              
-TipsTV v3
-
-              
-Bienvenido, {session?.user?.name}
-
-
-            
-
-          
-
-          
-
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10">
+              <img
+                src="https://omarcuellar.co/wp-content/uploads/logo-metodooc.png"
+                alt="Método OC"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div>
+              <h1 className="font-bold text-lg leading-tight">TipsTV v3</h1>
+              <p className="text-xs text-gray-500">Bienvenido, {session?.user?.name}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
             {session?.user?.role === "ADMIN" && (
-               router.push("/admin")}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push("/admin")}
               >
                 Admin
-              
+              </Button>
             )}
-             signOut({ callbackUrl: "/login" })}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => signOut({ callbackUrl: "/login" })}
             >
-              
+              <LogOut className="w-4 h-4 mr-1" />
               Salir
-            
-          
+            </Button>
+          </div>
+        </div>
+      </header>
 
-        
-
-      
-
-
-      
-
+      <main className="max-w-4xl mx-auto px-4 py-6">
         {result && (
-          
-
-            
-              
+          <div className="mb-6">
+            <Button variant="ghost" onClick={resetSearch} className="mb-4">
+              <ArrowLeft className="w-4 h-4 mr-2" />
               Nueva búsqueda
-            
-            
-            
-              
-                
-                  
+            </Button>
 
+            <Card className="border-green-200 bg-green-50">
+              <CardHeader>
+                <CardTitle className="text-green-800 flex items-center gap-2">
+                  <Search className="w-5 h-5" />
                   Diagnóstico encontrado
-                
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div><span className="font-semibold">Tipo:</span> {result.type}</div>
+                  <div><span className="font-semibold">Marca:</span> {result.brand}</div>
+                  <div className="col-span-2"><span className="font-semibold">Modelo/Chasis:</span> {result.modelChassis}</div>
+                  <div className="col-span-2"><span className="font-semibold">Síntoma:</span> {result.symptom}</div>
+                </div>
 
-              
-              
-                
-
-                  
-Tipo: {result.type}
-
-                  
-Marca: {result.brand}
-
-                  
-Modelo/Chasis: {result.modelChassis}
-
-                  
-Síntoma: {result.symptom}
-
-                
-
-                
                 {result.descarte && (
-                  
-
-                    
-Descarte / Causa:
-
-                    
-{result.descarte}
-
-
-                  
-
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-yellow-800 mb-1">Descarte / Causa:</h4>
+                    <p className="text-yellow-900 whitespace-pre-wrap">{result.descarte}</p>
+                  </div>
                 )}
-                
-                
 
-                  
-Solución:
-
-                  
-
+                <div className="bg-white border rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-800 mb-2">Solución:</h4>
+                  <div className="text-gray-700 whitespace-pre-wrap leading-relaxed">
                     {result.solution}
-                  
+                  </div>
+                </div>
 
-                
-
-                
                 {result.mediaLinks && result.mediaLinks.length > 0 && (
-                  
-
-                    
-Enlaces de referencia:
-
-                    
-
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-2">Enlaces de referencia:</h4>
+                    <div className="flex flex-wrap gap-2">
                       {result.mediaLinks.map((link, i) => (
-                        
-                          
+                        <a
+                          key={i}
+                          href={link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-md text-sm hover:bg-blue-200 transition"
+                        >
+                          <ExternalLink className="w-3 h-3" />
                           Link {i + 1}
-                        
+                        </a>
                       ))}
-                    
-
-                  
-
+                    </div>
+                  </div>
                 )}
-              
-            
-          
-
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         {showPartial && partialResults.length > 0 && (
-          
-
-             setShowPartial(false)} className="mb-4">
-              
+          <div className="mb-6">
+            <Button variant="ghost" onClick={() => setShowPartial(false)} className="mb-4">
+              <ArrowLeft className="w-4 h-4 mr-2" />
               Volver a búsqueda
-            
-            
-            
-              
-                
-                  
+            </Button>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <List className="w-5 h-5" />
                   Tips encontrados ({partialResults.length})
-                
-                
-
+                </CardTitle>
+                <p className="text-sm text-gray-500">
                   {type} → {brand} {model ? `→ ${model}` : ""}
-                
-
-
-              
-              
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-3">
                 {partialResults.map((c) => (
-                  
- {
+                  <div
+                    key={c.id}
+                    className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition"
+                    onClick={() => {
                       setResult(c)
                       setShowPartial(false)
                       setPartialResults([])
                     }}
                   >
-                    
-
-                      
-
-                        
-{c.modelChassis}
-
-                        
-{c.symptom}
-
-                      
-
-                      
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="font-semibold text-gray-800">{c.modelChassis}</div>
+                        <div className="text-sm text-gray-600 mt-1">{c.symptom}</div>
+                      </div>
+                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
                         {c.type}
-                      
-                    
-
-                  
-
+                      </span>
+                    </div>
+                  </div>
                 ))}
-              
-            
-          
-
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         {notFound && (
-          
-
-             setNotFound(false)} className="mb-4">
-              
+          <div className="mb-6">
+            <Button variant="ghost" onClick={() => setNotFound(false)} className="mb-4">
+              <ArrowLeft className="w-4 h-4 mr-2" />
               Intentar de nuevo
-            
-            
-              
-                
-
+            </Button>
+            <Card className="border-red-200 bg-red-50">
+              <CardContent className="py-8 text-center">
+                <div className="text-red-600 text-lg font-semibold mb-2">
                   No encontré información
-                
-
-                
-
-                  No hay casos registrados con esos datos.
-
+                </div>
+                <p className="text-red-700">
+                  No hay casos registrados con esos datos.<br />
                   Verifica el modelo/chasis y el síntoma.
-                
-
-
-              
-            
-          
-
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         {!result && !showPartial && !notFound && (
-          
-            
-              Buscar diagnóstico
-            
-            
-              
-
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Buscar diagnóstico</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center gap-2 mb-4">
                 {[1, 2, 3, 4].map((s) => (
-                  
-
+                  <div
+                    key={s}
+                    className={`flex-1 h-2 rounded-full ${
+                      s <= step ? "bg-blue-600" : "bg-gray-200"
+                    }`}
+                  />
                 ))}
-              
-
-              
-
+              </div>
+              <p className="text-sm text-gray-500 text-center">
                 Paso {step} de 4
-              
-
-
+              </p>
 
               {step === 1 && (
-                
-
-                  1. Selecciona el tipo de TV
-                  
-
-                
-
+                <div className="space-y-4">
+                  <label className="text-lg font-medium block">1. Selecciona el tipo de TV</label>
+                  <Select value={type} onValueChange={(v) => { setType(v); setStep(2) }}>
+                    <SelectTrigger className="h-14 text-lg">
+                      <SelectValue placeholder="Selecciona tipo..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {types.map((t) => (
+                        <SelectItem key={t} value={t} className="text-lg py-3">
+                          {t}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               )}
 
               {step === 2 && (
-                
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="sm" onClick={goBack}>
+                      <ArrowLeft className="w-4 h-4" />
+                    </Button>
+                    <label className="text-lg font-medium">2. Selecciona la marca</label>
+                  </div>
+                  <div className="text-sm text-gray-500 mb-2">Tipo: {type}</div>
+                  <Select value={brand} onValueChange={(v) => { setBrand(v); setStep(3) }}>
+                    <SelectTrigger className="h-14 text-lg">
+                      <SelectValue placeholder="Selecciona marca..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {brands.map((b) => (
+                        <SelectItem key={b} value={b} className="text-lg py-3">
+                          {b}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-                  
-
-                    
-                      
-                    
-                    2. Selecciona la marca
-                  
-
-                  
-Tipo: {type}
-
-                  
-
-                  
                   {brand && (
-                    
-                      
+                    <Button
+                      variant="outline"
+                      className="w-full h-12 text-base"
+                      onClick={handleShowPartial}
+                    >
+                      <List className="w-4 h-4 mr-2" />
                       Ver todos los tips de {brand}
-                    
+                    </Button>
                   )}
-                
-
+                </div>
               )}
 
               {step === 3 && (
-                
-
-                  
-
-                    
-                      
-                    
-                    3. Escribe el modelo/chasis
-                  
-
-                  
-{type} → {brand}
-
-                   setStep(4)}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="sm" onClick={goBack}>
+                      <ArrowLeft className="w-4 h-4" />
+                    </Button>
+                    <label className="text-lg font-medium">3. Escribe el modelo/chasis</label>
+                  </div>
+                  <div className="text-sm text-gray-500 mb-2">{type} → {brand}</div>
+                  <Autocomplete
+                    value={model}
+                    onChange={setModel}
+                    onSelect={() => setStep(4)}
                     field="modelChassis"
                     type={type}
                     brand={brand}
                     placeholder="Escribe el modelo/chasis..."
                   />
-                  
-                  {model && (
-                    
-                      
-                      Ver todos los tips de {model}
-                    
-                  )}
-                
 
+                  {model && (
+                    <Button
+                      variant="outline"
+                      className="w-full h-12 text-base"
+                      onClick={handleShowPartial}
+                    >
+                      <List className="w-4 h-4 mr-2" />
+                      Ver todos los tips de {model}
+                    </Button>
+                  )}
+                </div>
               )}
 
               {step === 4 && (
-                
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="sm" onClick={goBack}>
+                      <ArrowLeft className="w-4 h-4" />
+                    </Button>
+                    <label className="text-lg font-medium">4. Escribe el síntoma</label>
+                  </div>
+                  <div className="text-sm text-gray-500 mb-2">{type} → {brand} → {model}</div>
+                  <Autocomplete
+                    value={symptom}
+                    onChange={setSymptom}
+                    field="symptom"
+                    type={type}
+                    brand={brand}
+                    modelChassis={model}
+                    placeholder="Escribe el síntoma (ej: Backlight, imagen, sonido)..."
+                  />
 
-                  
-
-                    
-                      
-                    
-                    4. Escribe el síntoma
-                  
-
-                  
-{type} → {brand} → {model}
-
-                  
-                  
-                  
-                    
-
+                  <Button
+                    onClick={handleSearch}
+                    disabled={!symptom || loading}
+                    className="w-full h-14 text-lg mt-4"
+                  >
+                    <Search className="w-5 h-5 mr-2" />
                     {loading ? "Buscando..." : "Buscar diagnóstico exacto"}
-                  
-
-                
-
+                  </Button>
+                </div>
               )}
-            
-          
+            </CardContent>
+          </Card>
         )}
-      
-
-    
-
+      </main>
+    </div>
   )
 }
