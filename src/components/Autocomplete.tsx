@@ -26,12 +26,12 @@ export default function Autocomplete({
   placeholder = "Escribe para buscar...",
   disabled = false
 }: AutocompleteProps) {
-  const [suggestions, setSuggestions] = useState([])
+  const [suggestions, setSuggestions] = useState<string[]>([])
   const [showDropdown, setShowDropdown] = useState(false)
   const [loading, setLoading] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
-  const inputRef = useRef(null)
-  const dropdownRef = useRef(null)
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -88,7 +88,7 @@ export default function Autocomplete({
     onSelect?.(suggestion)
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!showDropdown || suggestions.length === 0) return
 
     switch (e.key) {
@@ -113,11 +113,12 @@ export default function Autocomplete({
   }
 
   return (
-    
-
-      
-{value}
- onChange(e.target.value)}
+    <div className="relative">
+      <Input
+        ref={inputRef}
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         onFocus={() => {
           if (suggestions.length > 0) setShowDropdown(true)
@@ -129,41 +130,44 @@ export default function Autocomplete({
       />
 
       {loading && (
-        
-
-          
-
-        
-
+        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+          <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+        </div>
       )}
 
       {showDropdown && suggestions.length > 0 && (
-        
-
+        <div
+          ref={dropdownRef}
+          className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+        >
           {suggestions.map((suggestion, index) => (
-            
- {
+            <div
+              key={index}
+              className={`px-4 py-3 cursor-pointer transition-colors ${
+                index === highlightedIndex
+                  ? 'bg-blue-100 text-blue-900'
+                  : 'hover:bg-gray-50'
+              }`}
+              onMouseDown={(e) => {
                 e.preventDefault()
                 handleSelect(suggestion)
               }}
               onMouseEnter={() => setHighlightedIndex(index)}
             >
-              {suggestion}
-            
-
+              <span className="text-lg">{suggestion}</span>
+            </div>
           ))}
-        
-
+        </div>
       )}
 
       {showDropdown && !loading && suggestions.length === 0 && value.trim() && (
-        
-
+        <div
+          ref={dropdownRef}
+          className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-4 text-center text-gray-500"
+        >
           No se encontraron sugerencias
-        
-
+        </div>
       )}
-    
-
+    </div>
   )
 }
