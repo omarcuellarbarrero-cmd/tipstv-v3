@@ -1,7 +1,5 @@
 "use client"
 
-// 1. AGREGAR IMPORT al inicio del archivo:
-import Autocomplete from "@/components/Autocomplete"
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -16,6 +14,7 @@ import {
 } from "@/components/ui/select"
 import { LogOut, Search, ArrowLeft, ExternalLink, List } from "lucide-react"
 import { signOut } from "next-auth/react"
+import Autocomplete from "@/components/Autocomplete"
 
 interface CaseResult {
   id: string
@@ -415,21 +414,18 @@ export default function DashboardPage() {
                     <Button variant="ghost" size="sm" onClick={goBack}>
                       <ArrowLeft className="w-4 h-4" />
                     </Button>
-                    <label className="text-lg font-medium">3. Selecciona modelo/chasis</label>
+                    <label className="text-lg font-medium">3. Escribe el modelo/chasis</label>
                   </div>
                   <div className="text-sm text-gray-500 mb-2">{type} → {brand}</div>
-                  <Select value={model} onValueChange={(v) => { setModel(v); setStep(4) }}>
-                    <SelectTrigger className="h-14 text-lg">
-                      <SelectValue placeholder="Selecciona modelo..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {models.map((m) => (
-                        <SelectItem key={m} value={m} className="text-lg py-3">
-                          {m}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Autocomplete
+                    value={model}
+                    onChange={setModel}
+                    onSelect={() => setStep(4)}
+                    field="modelChassis"
+                    type={type}
+                    brand={brand}
+                    placeholder="Escribe el modelo/chasis..."
+                  />
                   
                   {model && (
                     <Button
@@ -450,21 +446,18 @@ export default function DashboardPage() {
                     <Button variant="ghost" size="sm" onClick={goBack}>
                       <ArrowLeft className="w-4 h-4" />
                     </Button>
-                    <label className="text-lg font-medium">4. Selecciona el síntoma</label>
+                    <label className="text-lg font-medium">4. Escribe el síntoma</label>
                   </div>
                   <div className="text-sm text-gray-500 mb-2">{type} → {brand} → {model}</div>
-                  <Select value={symptom} onValueChange={(v) => { setSymptom(v) }}>
-                    <SelectTrigger className="h-14 text-lg">
-                      <SelectValue placeholder="Selecciona síntoma..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {symptoms.map((s) => (
-                        <SelectItem key={s} value={s} className="text-lg py-3">
-                          {s}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Autocomplete
+                    value={symptom}
+                    onChange={setSymptom}
+                    field="symptom"
+                    type={type}
+                    brand={brand}
+                    modelChassis={model}
+                    placeholder="Escribe el síntoma..."
+                  />
                   
                   <Button
                     onClick={handleSearch}
