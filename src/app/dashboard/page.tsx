@@ -1,5 +1,18 @@
-"use client"
+// 1. AGREGAR IMPORT al inicio del archivo:
+import Autocomplete from "@/components/Autocomplete"
 
+// 2. REEMPLAZAR EL PASO 3 (modelo/chasis) - Busca el bloque:
+// {step === 3 && (
+//   ...
+// )}
+// Y reemplaza el 
+ por:
+
+
+
+// El botón de búsqueda ya existe en el paso 4:
+// ...
+"use client"
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
