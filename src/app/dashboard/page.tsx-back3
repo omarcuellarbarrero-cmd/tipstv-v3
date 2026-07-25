@@ -48,8 +48,6 @@ export default function DashboardPage() {
 
   const [allModels, setAllModels] = useState<string[]>([])
   const [showAllModels, setShowAllModels] = useState(false)
-  const [allSymptoms, setAllSymptoms] = useState<string[]>([])
-  const [showAllSymptoms, setShowAllSymptoms] = useState(false)
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -463,51 +461,15 @@ export default function DashboardPage() {
                     <label className="text-lg font-medium">4. Escribe el síntoma</label>
                   </div>
                   <div className="text-sm text-gray-500 mb-2">{type} → {brand} → {model}</div>
-
-                  <div className="flex gap-2">
-                    <Autocomplete
-                      value={symptom}
-                      onChange={setSymptom}
-                      field="symptom"
-                      type={type}
-                      brand={brand}
-                      modelChassis={model}
-                      placeholder="Escribe el síntoma (ej: Backlight, imagen, sonido)..."
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-14 px-3"
-                      title="Ver todos los síntomas"
-                      onClick={async () => {
-                        const res = await fetch(
-                          `/api/filters?type=${encodeURIComponent(type)}&brand=${encodeURIComponent(brand)}&modelChassis=${encodeURIComponent(model)}`
-                        )
-                        const data = await res.json()
-                        setAllSymptoms(data.filters || [])
-                        setShowAllSymptoms(true)
-                      }}
-                    >
-                      <List className="w-4 h-4" />
-                    </Button>
-                  </div>
-
-                  {showAllSymptoms && allSymptoms.length > 0 && (
-                    <div className="border border-gray-200 rounded-lg max-h-60 overflow-y-auto">
-                      {allSymptoms.map((s) => (
-                        <div
-                          key={s}
-                          className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b last:border-0 transition"
-                          onClick={() => {
-                            setSymptom(s)
-                            setShowAllSymptoms(false)
-                          }}
-                        >
-                          <span className="text-lg">{s}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <Autocomplete
+                    value={symptom}
+                    onChange={setSymptom}
+                    field="symptom"
+                    type={type}
+                    brand={brand}
+                    modelChassis={model}
+                    placeholder="Escribe el síntoma (ej: Backlight, imagen, sonido)..."
+                  />
 
                   <Button
                     onClick={handleSearch}
