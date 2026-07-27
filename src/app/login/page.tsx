@@ -1,5 +1,5 @@
 "use client"
-import BackButton from "./BackButton";
+
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -101,6 +101,14 @@ export default function LoginPage() {
           </form>
         </CardContent>
       </Card>
+      <p style={{ textAlign: "center", marginTop: "40px", marginBottom: "20px" }}>
+  <a 
+    href="https://omarcuellar.co/"
+    style={{ color: "#123A63", fontWeight: 600, textDecoration: "underline" }}
+  >
+    ← Ir a omarcuellar.co
+  </a>
+</p>
     </div>
   )
 }
