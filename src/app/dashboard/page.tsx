@@ -1,4 +1,5 @@
 "use client"
+import BackButton from "./BackButton";   // ← AGREGA ESTA LÍNEA
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -61,7 +62,15 @@ export default function DashboardPage() {
       .then((r) => r.json())
       .then((data) => setTypes(data.filters))
   }, [])
-
+function App() {
+  return (
+    <div className="app">          {/* o <>, <main>, etc. */}
+      <BackButton />               {/* ← PEGA AQUÍ, como primer hijo */}
+      
+      {/* ... todo lo demás de tu app */}
+    </div>
+  );
+}
   useEffect(() => {
     if (!type) return
     setBrand("")
