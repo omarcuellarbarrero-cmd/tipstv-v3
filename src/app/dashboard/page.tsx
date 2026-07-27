@@ -1,5 +1,5 @@
 "use client"
-import BackButton from "./BackButton";   // ← AGREGA ESTA LÍNEA
+import BackButton from "../../components/BackButton";   // ← AGREGA ESTA LÍNEA
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import BackButton from "./BackButton"; // ajusta la ruta si está en otra carpeta
+import BackButton from "@/components/BackButton";
 
 function App() {
   return (
