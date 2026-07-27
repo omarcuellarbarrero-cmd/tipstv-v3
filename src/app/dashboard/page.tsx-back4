@@ -1,15 +1,5 @@
 "use client"
-import BackButton from "./BackButton"; // ajusta la ruta si está en otra carpeta
 
-function App() {
-  return (
-    <div className="app">
-      <BackButton />
-      
-      {/* ... resto de tu app */}
-    </div>
-  );
-}
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
