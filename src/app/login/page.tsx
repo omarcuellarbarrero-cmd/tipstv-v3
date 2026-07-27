@@ -8,16 +8,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
-
-function App() {
-  return (
-    <div className="app">
-      <BackButton />
-      
-      {/* ... resto de tu app */}
-    </div>
-  );
-}
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -47,7 +37,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4 gap-6">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 w-32 h-32">
@@ -101,14 +91,18 @@ export default function LoginPage() {
           </form>
         </CardContent>
       </Card>
-      <p style={{ textAlign: "center", marginTop: "40px", marginBottom: "20px" }}>
-  <a 
-    href="https://omarcuellar.co/"
-    style={{ color: "#123A63", fontWeight: 600, textDecoration: "underline" }}
-  >
-    ← Ir a omarcuellar.co
-  </a>
-</p>
+
+      <a 
+        href="https://omarcuellar.co/"
+        style={{ 
+          color: "#123A63", 
+          fontWeight: 600, 
+          textDecoration: "underline",
+          fontSize: "1rem"
+        }}
+      >
+        ← Ir a omarcuellar.co
+      </a>
     </div>
   )
 }
