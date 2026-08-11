@@ -11,9 +11,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { LogOut, Search, ArrowLeft, ExternalLink, List } from "lucide-react"
+import { LogOut, Search, ArrowLeft, ExternalLink, List, Image as ImageIcon, FileText, Video } from "lucide-react"
 import { signOut } from "next-auth/react"
 import Autocomplete from "@/components/Autocomplete"
+import { getMediaType, MEDIA_META, type MediaType } from "@/lib/media"
+
+const MEDIA_ICONS: Record<MediaType, typeof ImageIcon> = {
+  image: ImageIcon,
+  pdf: FileText,
+  video: Video,
+  link: ExternalLink,
+}
+
+const MEDIA_STYLES: Record<MediaType, string> = {
+  image: "bg-purple-100 text-purple-700 hover:bg-purple-200",
+  pdf: "bg-red-100 text-red-700 hover:bg-red-200",
+  video: "bg-orange-100 text-orange-700 hover:bg-orange-200",
+  link: "bg-blue-100 text-blue-700 hover:bg-blue-200",
+}
 
 interface CaseResult {
   id: string
@@ -224,20 +239,32 @@ export default function DashboardPage() {
 
                 {result.mediaLinks && result.mediaLinks.length > 0 && (
                   <div>
-                    <h4 className="font-semibold text-gray-800 mb-2">Enlaces de referencia:</h4>
+                    <h4 className="font-semibold text-gray-800 mb-2">Información complementaria:</h4>
                     <div className="flex flex-wrap gap-2">
-                      {result.mediaLinks.map((link, i) => (
-                        <a
-                          key={i}
-                          href={link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-md text-sm hover:bg-blue-200 transition"
-                        >
-                          <ExternalLink className="w-3 h-3" />
-                          Link {i + 1}
-                        </a>
-                      ))}
+                      {result.mediaLinks.map((link, i) => {
+                        const type = getMediaType(link)
+                        const meta = MEDIA_META[type]
+                        const Icon = MEDIA_ICONS[type]
+                        const indexWithinType =
+                          result.mediaLinks
+                            .slice(0, i + 1)
+                            .filter((l) => getMediaType(l) === type).length
+
+                        return (
+                          <a
+                            key={i}
+                            href={link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title={link}
+                            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-sm transition ${MEDIA_STYLES[type]}`}
+                          >
+                            <span aria-hidden="true">{meta.emoji}</span>
+                            <Icon className="w-3.5 h-3.5" />
+                            {meta.label} {indexWithinType}
+                          </a>
+                        )
+                      })}
                     </div>
                   </div>
                 )}

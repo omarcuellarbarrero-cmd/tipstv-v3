@@ -22,6 +22,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { ArrowLeft, Plus, Search, Trash2, Pencil, X } from "lucide-react"
+import { getMediaType, MEDIA_META } from "@/lib/media"
 
 interface Case {
   id: string
@@ -244,7 +245,7 @@ export default function AdminCasesPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Enlaces de referencia</Label>
+                  <Label>Información complementaria (fotos, PDF, videos, enlaces)</Label>
                   <div className="flex gap-2">
                     <Input
                       value={newLink}
@@ -255,18 +256,31 @@ export default function AdminCasesPage() {
                       Agregar
                     </Button>
                   </div>
+                  <p className="text-xs text-gray-500">
+                    El tipo (📷 Foto, 📄 PDF, 🎥 Video, 🔗 Enlace) se detecta automáticamente según la URL.
+                  </p>
                   {formData.mediaLinks.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2">
-                      {formData.mediaLinks.map((link: string, i: number) => (
-                        <div key={i} className="flex items-center gap-1 bg-gray-100 rounded px-2 py-1 text-sm">
-                          <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 truncate max-w-[200px]">
-                            Link {i + 1}
-                          </a>
-                          <button type="button" onClick={() => removeLink(i)} className="text-red-500 ml-1">
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
+                      {formData.mediaLinks.map((link: string, i: number) => {
+                        const meta = MEDIA_META[getMediaType(link)]
+                        return (
+                          <div key={i} className="flex items-center gap-1 bg-gray-100 rounded px-2 py-1 text-sm">
+                            <span aria-hidden="true">{meta.emoji}</span>
+                            <a
+                              href={link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title={link}
+                              className="text-blue-600 truncate max-w-[180px]"
+                            >
+                              {meta.label} {i + 1}
+                            </a>
+                            <button type="button" onClick={() => removeLink(i)} className="text-red-500 ml-1">
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )
+                      })}
                     </div>
                   )}
                 </div>
